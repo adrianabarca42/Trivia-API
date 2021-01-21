@@ -1,1 +1,0 @@
-# Udacity Trivia Application
