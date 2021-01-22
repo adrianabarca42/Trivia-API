@@ -134,6 +134,7 @@ def create_app(test_config=None):
     try:
       return jsonify({
         'success': True,
+        'created': question.id,
         'questions': paginate_questions, 
         'total_questions': len(questions),
       })
