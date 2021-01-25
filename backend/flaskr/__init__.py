@@ -225,6 +225,3 @@ def create_app(test_config=None):
             }), 405
 
     return app
-
-
-    
