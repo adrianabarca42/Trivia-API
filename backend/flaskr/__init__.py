@@ -7,6 +7,8 @@ import random
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+
+
 def paginated_questions(request, list1):
     page = request.args.get('page', 1, type=int)
     start = (page - 1) * QUESTIONS_PER_PAGE
@@ -14,16 +16,19 @@ def paginated_questions(request, list1):
     formatted_questions = [question.format() for question in list1]
     return formatted_questions[start:end]
 
+
 def create_app(test_config=None):
-  # create and configure the app
+    # create and configure the app
     app = Flask(__name__)
     setup_db(app)
     cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization,true')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+        response.headers.add(
+            'Access-Control-Allow-Headers', 'Content-Type, Authorization,true')
+        response.headers.add(
+            'Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
         return response
 
     @app.route('/categories', methods=['GET'])
@@ -36,7 +41,8 @@ def create_app(test_config=None):
                 abort(404)
             return jsonify({
                 'success': True,
-                'categories': {category.id: category.type for category in categories}
+                'categories': {
+                    category.id: category.type for category in categories}
                 })
         except:
             abort(422)
@@ -56,7 +62,8 @@ def create_app(test_config=None):
                 'questions': paginate_list,
                 'total_questions': len(Question.query.all()),
                 'current_category': 1,
-                'categories': {category.id: category.type for category in categories}
+                'categories': {
+                    category.id: category.type for category in categories}
                 })
         except:
             abort(422)
@@ -65,7 +72,8 @@ def create_app(test_config=None):
     def delete_question(question_id):
         if not request.method == 'DELETE':
             abort(405)
-        question = Question.query.filter(Question.id == question_id).one_or_none()
+        question = Question.query.filter(
+            Question.id == question_id).one_or_none()
         if question is None:
             abort(404)
         try:
@@ -106,11 +114,11 @@ def create_app(test_config=None):
             return jsonify({
                 'success': True,
                 'created': question.id,
-                'questions': paginate_questions, 
+                'questions': paginate_questions,
                 'total_questions': len(questions),
                 })
-        except: 
-            abort(422)  
+        except:
+            abort(422)
 
     @app.route('/questions/search', methods=['POST'])
     def search_questions():
@@ -118,7 +126,8 @@ def create_app(test_config=None):
             abort(405)
         data = request.get_json()
         search_term = data.get('searchTerm')
-        questions = Question.query.filter(Question.question.ilike('%{}%'.format(search_term))).all()
+        questions = Question.query.filter(
+            Question.question.ilike('%{}%'.format(search_term))).all()
         paginate_questions = paginated_questions(request, questions)
         if len(paginate_questions) == 0:
             abort(404)
@@ -135,9 +144,11 @@ def create_app(test_config=None):
     def get_questions_by_category(category_id):
         if not request.method == 'GET':
             abort(405)
-        questions = Question.query.filter(Question.category == str(category_id)).all()
+        questions = Question.query.filter(
+            Question.category == str(category_id)).all()
         paginate_list = paginated_questions(request, questions)
-        current_category = Category.query.filter(Category.id == category_id).one_or_none()
+        current_category = Category.query.filter(
+            Category.id == category_id).one_or_none()
         if len(paginate_list) == 0:
             abort(404)
         try:
@@ -161,7 +172,8 @@ def create_app(test_config=None):
             if quiz_category['id'] == 0:
                 all_questions = Question.query.all()
             else:
-                all_questions = Question.query.filter_by(category = quiz_category['id']).all()
+                all_questions = Question.query.filter_by(
+                    category=quiz_category['id']).all()
         if len(all_questions) == 0:
             abort(404)
         try:
@@ -211,7 +223,8 @@ def create_app(test_config=None):
             "error": 405,
             "message": "method not allowed"
             }), 405
-  
+
     return app
+
 
     
